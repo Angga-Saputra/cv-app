@@ -3,7 +3,7 @@ import base64, time
 #from streamlit_theme import st_theme
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.messages import HumanMessage
 import pandas as pd
 from io import BytesIO
