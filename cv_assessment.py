@@ -142,7 +142,7 @@ if uploaded_req:
 
             # Save DataFrame to Excel
             output = BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            with pd.ExcelWriter(output) as writer:
                 df_results.to_excel(writer, index=False, sheet_name='CV Analysis')
             excel_data = output.getvalue()
 
