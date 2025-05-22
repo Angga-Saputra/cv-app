@@ -12,6 +12,7 @@ dependencies = [
     "langchain-openai>=0.3.16",
     "langgraph>=0.4.3",
     "openai>=1.77.0",
+    "openpyxl>=3.1.5",
     "st-theme>=1.2.3",
     "streamlit>=1.45.0",
 ]
