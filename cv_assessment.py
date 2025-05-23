@@ -62,10 +62,6 @@ Here is job requirements:
     }
     return response
 
-# Initialize session state for theme tracking
-if 'current_theme' not in st.session_state:
-    st.session_state.current_theme = None
-
 with st.spinner("Preparing Application"):
     time.sleep(1)
 
@@ -77,39 +73,107 @@ def get_base64_of_image(image_path):
         st.error(f"Background image not found: {image_path}")
         return None
 
-def set_background_image(image_path):
-    encoded_image = get_base64_of_image(image_path)
-    if encoded_image:
-        st.markdown(
-            f"""
-            <style>
-            .stApp {{
-                background-image: url("data:image/png;base64,{encoded_image}");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
+def set_dynamic_background():
+    # Get base64 encoded images
+    light_bg = get_base64_of_image("./light_bg.png")
+    dark_bg = get_base64_of_image("./dark_bg.png")
+    
+    if not light_bg or not dark_bg:
+        return
+    
+    st.markdown(
+        f"""
+        <style>
+        /* Remove any existing background styles */
+        .stApp {{
+            background-image: url("data:image/png;base64,{light_bg}") !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            transition: background-image 0.3s ease !important;
+        }}
+        
+        /* Dark theme detection - multiple selectors for reliability */
+        [data-testid="stAppViewContainer"][data-theme="dark"] .stApp,
+        .stApp:has([data-baseweb-theme="dark"]),
+        body[data-theme="dark"] .stApp {{
+            background-image: url("data:image/png;base64,{dark_bg}") !important;
+        }}
+        </style>
+        
+        <script>
+        (function() {{
+            let currentTheme = 'light';
+            
+            function detectAndSetTheme() {{
+                // Multiple ways to detect dark theme
+                const isDark = 
+                    // Check for dark theme indicators
+                    document.querySelector('[data-baseweb-theme="dark"]') !== null ||
+                    document.documentElement.getAttribute('data-theme') === 'dark' ||
+                    // Check computed styles for dark colors
+                    window.getComputedStyle(document.body).backgroundColor.includes('rgb(14, 17, 23)') ||
+                    window.getComputedStyle(document.documentElement).getPropertyValue('--background-color').includes('14, 17, 23');
+                
+                const newTheme = isDark ? 'dark' : 'light';
+                
+                if (newTheme !== currentTheme) {{
+                    currentTheme = newTheme;
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    
+                    // Force a style update
+                    const appContainer = document.querySelector('[data-testid="stAppViewContainer"]');
+                    if (appContainer) {{
+                        appContainer.setAttribute('data-theme', newTheme);
+                    }}
+                }}
             }}
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
+            
+            // Initial detection
+            detectAndSetTheme();
+            
+            // Watch for theme changes
+            const observer = new MutationObserver(function(mutations) {{
+                let shouldCheck = false;
+                mutations.forEach(function(mutation) {{
+                    if (mutation.type === 'attributes' || 
+                        (mutation.type === 'childList' && mutation.addedNodes.length > 0)) {{
+                        shouldCheck = true;
+                    }}
+                }});
+                if (shouldCheck) {{
+                    setTimeout(detectAndSetTheme, 100);
+                }}
+            }});
+            
+            // Observe changes to the entire document
+            observer.observe(document.documentElement, {{
+                attributes: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ['style', 'class', 'data-theme']
+            }});
+            
+            // Also check periodically as a fallback
+            setInterval(detectAndSetTheme, 1000);
+            
+            // Check when page visibility changes (helpful for theme toggles)
+            document.addEventListener('visibilitychange', detectAndSetTheme);
+        }})();
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
 
-# Get current theme
-current_theme = st.get_option("theme.base") or "light"
+# Apply the dynamic background
+set_dynamic_background()
 
-# Check if theme has changed
-if st.session_state.current_theme != current_theme:
-    st.session_state.current_theme = current_theme
-    # Force a rerun to apply new background
-    st.rerun()
-
-# Set background based on current theme
-if current_theme == "dark":
-    background_image_path = "./dark_bg.png"
-else:
-    background_image_path = "./light_bg.png"
-
-set_background_image(background_image_path)
+# Add a manual refresh option in the sidebar for troubleshooting
+with st.sidebar:
+    current_theme = st.get_option("theme.base") or "light"
+    st.write(f"Detected theme: **{current_theme}**")
+    if st.button("🔄 Refresh Background", help="Click if background doesn't change with theme"):
+        st.rerun()
 
 # Judul aplikasi llm
 st.title("CV Assesment")
