@@ -73,107 +73,76 @@ def get_base64_of_image(image_path):
         st.error(f"Background image not found: {image_path}")
         return None
 
-def set_dynamic_background():
-    # Get base64 encoded images
+def set_responsive_background():
+    """Set background that responds to Streamlit Cloud theme settings"""
     light_bg = get_base64_of_image("./light_bg.png")
     dark_bg = get_base64_of_image("./dark_bg.png")
     
     if not light_bg or not dark_bg:
         return
     
+    # Get the configured theme from Streamlit settings
+    configured_theme = st.get_option("theme.base") or "light"
+    
     st.markdown(
         f"""
         <style>
-        /* Remove any existing background styles */
+        /* Base background for light theme or default */
         .stApp {{
-            background-image: url("data:image/png;base64,{light_bg}") !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            transition: background-image 0.3s ease !important;
+            background-image: url("data:image/png;base64,{light_bg}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }}
         
-        /* Dark theme detection - multiple selectors for reliability */
-        [data-testid="stAppViewContainer"][data-theme="dark"] .stApp,
-        .stApp:has([data-baseweb-theme="dark"]),
+        /* Override for dark theme when configured in Streamlit Cloud */
+        .stApp[data-theme="dark"],
+        [data-theme="dark"] .stApp,
         body[data-theme="dark"] .stApp {{
             background-image: url("data:image/png;base64,{dark_bg}") !important;
         }}
+        
+        /* Media query fallback for system dark mode preference */
+        @media (prefers-color-scheme: dark) {{
+            .stApp {{
+                background-image: url("data:image/png;base64,{dark_bg}");
+            }}
+        }}
+        
+        /* Force dark background if theme is configured as dark */
+        {"" if configured_theme != "dark" else f'''
+        .stApp {{
+            background-image: url("data:image/png;base64,{dark_bg}") !important;
+        }}
+        '''}
         </style>
         
         <script>
-        (function() {{
-            let currentTheme = 'light';
-            
-            function detectAndSetTheme() {{
-                // Multiple ways to detect dark theme
-                const isDark = 
-                    // Check for dark theme indicators
-                    document.querySelector('[data-baseweb-theme="dark"]') !== null ||
-                    document.documentElement.getAttribute('data-theme') === 'dark' ||
-                    // Check computed styles for dark colors
-                    window.getComputedStyle(document.body).backgroundColor.includes('rgb(14, 17, 23)') ||
-                    window.getComputedStyle(document.documentElement).getPropertyValue('--background-color').includes('14, 17, 23');
-                
-                const newTheme = isDark ? 'dark' : 'light';
-                
-                if (newTheme !== currentTheme) {{
-                    currentTheme = newTheme;
-                    document.documentElement.setAttribute('data-theme', newTheme);
-                    
-                    // Force a style update
-                    const appContainer = document.querySelector('[data-testid="stAppViewContainer"]');
-                    if (appContainer) {{
-                        appContainer.setAttribute('data-theme', newTheme);
-                    }}
-                }}
+        // Set theme attribute based on Streamlit's theme configuration
+        document.documentElement.setAttribute('data-theme', '{configured_theme}');
+        document.body.setAttribute('data-theme', '{configured_theme}');
+        
+        // Also check for runtime theme indicators
+        setTimeout(function() {{
+            const appContainer = document.querySelector('.stApp');
+            if (appContainer) {{
+                appContainer.setAttribute('data-theme', '{configured_theme}');
             }}
-            
-            // Initial detection
-            detectAndSetTheme();
-            
-            // Watch for theme changes
-            const observer = new MutationObserver(function(mutations) {{
-                let shouldCheck = false;
-                mutations.forEach(function(mutation) {{
-                    if (mutation.type === 'attributes' || 
-                        (mutation.type === 'childList' && mutation.addedNodes.length > 0)) {{
-                        shouldCheck = true;
-                    }}
-                }});
-                if (shouldCheck) {{
-                    setTimeout(detectAndSetTheme, 100);
-                }}
-            }});
-            
-            // Observe changes to the entire document
-            observer.observe(document.documentElement, {{
-                attributes: true,
-                childList: true,
-                subtree: true,
-                attributeFilter: ['style', 'class', 'data-theme']
-            }});
-            
-            // Also check periodically as a fallback
-            setInterval(detectAndSetTheme, 1000);
-            
-            // Check when page visibility changes (helpful for theme toggles)
-            document.addEventListener('visibilitychange', detectAndSetTheme);
-        }})();
+        }}, 100);
         </script>
         """,
         unsafe_allow_html=True
     )
 
-# Apply the dynamic background
-set_dynamic_background()
+# Apply the responsive background
+set_responsive_background()
 
-# Add a manual refresh option in the sidebar for troubleshooting
+# Debug info in sidebar
 with st.sidebar:
-    current_theme = st.get_option("theme.base") or "light"
-    st.write(f"Detected theme: **{current_theme}**")
-    if st.button("🔄 Refresh Background", help="Click if background doesn't change with theme"):
-        st.rerun()
+    st.write("**Theme Debug Info:**")
+    current_theme = st.get_option("theme.base")
+    st.write(f"Configured theme: `{current_theme}`")
+    st.write("*Theme changes require app restart in Streamlit Cloud*")
 
 # Judul aplikasi llm
 st.title("CV Assesment")
