@@ -62,38 +62,49 @@ Here is job requirements:
     }
     return response
 
-theme = st.get_option("theme.base")
-
-if theme is None:
-    theme = "light"  # default fallback
+# Initialize session state for theme tracking
+if 'current_theme' not in st.session_state:
+    st.session_state.current_theme = None
 
 with st.spinner("Preparing Application"):
     time.sleep(1)
-    theme = st.get_option("theme.base") or "light"
 
 def get_base64_of_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
-    
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except FileNotFoundError:
+        st.error(f"Background image not found: {image_path}")
+        return None
 
-# Custom CSS to set the background image
 def set_background_image(image_path):
     encoded_image = get_base64_of_image(image_path)
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{
-            background-image: url("data:image/png;base64,{encoded_image}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }}
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    if encoded_image:
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url("data:image/png;base64,{encoded_image}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
 
-if theme == "dark":
+# Get current theme
+current_theme = st.get_option("theme.base") or "light"
+
+# Check if theme has changed
+if st.session_state.current_theme != current_theme:
+    st.session_state.current_theme = current_theme
+    # Force a rerun to apply new background
+    st.rerun()
+
+# Set background based on current theme
+if current_theme == "dark":
     background_image_path = "./dark_bg.png"
 else:
     background_image_path = "./light_bg.png"
