@@ -22,73 +22,68 @@ def chat(req_content, uploaded_cv):
 
     fix_prompt = f'''You are an Expert Recruiter evaluating candidates for the specified role using a structured scoring system.
 
-SCORING BREAKDOWN (Total: 100 points):
+    SCORING BREAKDOWN (Total: 100 points):
 
-**1. GPA SCORING (25 points):**
-- GPA 3.50-4.00: 25 points (Strongly Recommended)
-- GPA 3.00-3.49: 15 points (Recommended)
-- GPA below 3.00: 0 points (Not Recommended)
+    **1. GPA SCORING (25 points):**
+    - GPA 3.50-4.00: 25 points (Strongly Recommended)
+    - GPA 3.00-3.49: 15 points (Recommended)
+    - GPA below 3.00: 0 points (Not Recommended)
 
-**2. EXPERIENCE SCORING (25 points):**
-- 0-2 years: 25 points (Strongly Recommended - Fresh talent)
-- 3-4 years: 15 points (Recommended)
-- 5+ years: 10 points (Over-qualified)
-- No experience: 5 points
+    **2. EXPERIENCE SCORING (25 points):**
+    - 0-2 years: 25 points (Strongly Recommended - Fresh talent)
+    - 3-4 years: 15 points (Recommended)
+    - 5+ years: 10 points (Over-qualified)
+    - No experience: 5 points
 
-**3. JOB REQUIREMENTS SCORING (50 points):**
-Evaluate based on the specific role requirements provided:
-- Technical Skills (Role-specific expertise): 20 points
-- Education/Relevant Degree: 15 points
-- Problem-solving & Analytical Skills: 10 points
-- Certifications/Projects: 5 points
+    **3. JOB REQUIREMENTS SCORING (50 points):**
+    Evaluate based on the specific role requirements provided:
+    - Technical Skills (Role-specific expertise): 20 points
+    - Education/Relevant Degree: 15 points
+    - Problem-solving & Analytical Skills: 10 points
+    - Certifications/Projects: 5 points
 
-**RESPONSE REQUIREMENTS:**
+    **RESPONSE REQUIREMENTS:**
 
-For the 'score' field: Calculate total points (0-100) by adding GPA + Experience + Job Requirements scores.
+    Do NOT respond in JSON. Just return values for these 3 fields clearly:
 
-For the 'reason' field: Provide structured breakdown in this exact format:
-"* GPA: [X.XX] = [X/25] points ([status])
-* Experience: [X years] = [X/25] points ([status])  
-* Job Requirements = [X/50] points (sum of all sub-points below)
-   1. Technical Skills: [detailed assessment] = [X/20] points
-   2. Education: [education evaluation] = [X/15] points
-   3. Problem-solving: [problem-solving assessment] = [X/10] points
-   4. Certifications/Projects: [certifications/projects evaluation] = [X/5] points"
+    1. score: integer (0-100) based on total of all points
+    2. reason: Use this EXACT structure:
+    "* GPA: [X.XX] = [X/25] points ([status])
+    * Experience: [X years] = [X/25] points ([status])  
+    * Job Requirements = [X/50] points (sum of all sub-points below)
+       1. Technical Skills: [detailed assessment] = [X/20] points
+       2. Education: [education evaluation] = [X/15] points
+       3. Problem-solving: [problem-solving assessment] = [X/10] points
+       4. Certifications/Projects: [certifications/projects evaluation] = [X/5] points"
 
-CRITICAL: Ensure the Job Requirements total equals the sum of all 4 sub-points (Technical Skills + Education + Problem-solving + Certifications/Projects). Double-check your math before responding.
+    3. desc: Use this EXACT format:
 
-For the 'desc' field: Provide comprehensive assessment in this EXACT format:
+    "**OVERALL SUITABILITY:** [Brief statement about candidate's fit for the role]
 
-"**OVERALL SUITABILITY:** [Brief statement about candidate's fit for the role]
+    **KEY STRENGTHS:**
+    - [Strength 1]
+    - [Strength 2]
+    - [Strength 3 if applicable]
 
-**KEY STRENGTHS:**
-- [Strength 1]
-- [Strength 2]
-- [Strength 3 if applicable]
+    **AREAS OF CONCERN:**
+    - [Concern 1]
+    - [Concern 2]
+    - [Concern 3 if applicable]
 
-**AREAS OF CONCERN:**
-- [Concern 1]
-- [Concern 2]
-- [Concern 3 if applicable]
+    **TECHNICAL CAPABILITIES:**
+    - [Relevant technical skill/capability 1]
+    - [Relevant technical skill/capability 2]
+    - [Additional capabilities if applicable]
 
-**TECHNICAL CAPABILITIES:**
-- [Relevant technical skill/capability 1]
-- [Relevant technical skill/capability 2]
-- [Additional capabilities if applicable]
+    **FINAL RECOMMENDATION:** [Choose exactly one: EXCELLENT MATCH | GOOD MATCH | POOR MATCH | NO MATCH]"
 
-**FINAL RECOMMENDATION:** [Choose exactly one: EXCELLENT MATCH | GOOD MATCH | POOR MATCH | NO MATCH]"
+    IMPORTANT: All sections must be present. Use 'None identified' if there is nothing to mention in a section.
 
-CRITICAL: Always include ALL sections above. If a section has no content, write "None identified" or "Not applicable".
-
-JOB REQUIREMENTS:
-{req_content}
-
-MATHEMATICAL VERIFICATION REQUIRED:
-Before finalizing your response, verify these calculations:
-1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
-2. GPA points + Experience points + Job Requirements points = Final score
-3. All individual scores must not exceed their maximum limits (GPA≤25, Experience≤25, Job Requirements≤50)
-'''
+    MATHEMATICAL VERIFICATION REQUIRED:
+    1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
+    2. GPA points + Experience points + Job Requirements points = Final score
+    3. Each section must not exceed its max (GPA≤25, Experience≤25, Job Requirements≤50)
+    '''
 
     prompt_text = HumanMessage(content=fix_prompt)
 
