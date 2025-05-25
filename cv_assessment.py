@@ -14,10 +14,46 @@ def chat(req_content, uploaded_cv):
     encoded_base64 = base64.b64encode(file_content).decode('utf-8')
 
 
-    fix_prompt = f'''You are an Expert Recruiters. Your task is review candidate data wether It's match for job requirements or not with given candidate data provided.
-Always answer in Indonesia language.
-Here is job requirements:
+    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for AI Engineer role using a structured scoring system.
+
+SCORING BREAKDOWN (Total: 100 points):
+
+**1. GPA SCORING (25 points):**
+- GPA 3.50-4.00: 25 points (Strongly Recommended)
+- GPA 3.00-3.49: 15 points (Recommended)
+- GPA below 3.00: 5 points (Not Recommended)
+
+**2. EXPERIENCE SCORING (25 points):**
+- 0-2 years: 25 points (Strongly Recommended - Fresh talent)
+- 3-4 years: 15 points (Recommended)
+- 5+ years: 10 points (Over-qualified)
+- No experience: 5 points
+
+**3. JOB REQUIREMENTS SCORING (50 points):**
+Evaluate based on AI Engineer requirements:
+- Technical Skills (Programming, ML/AI): 20 points
+- Education/Relevant Degree: 15 points
+- Problem-solving & Analytical Skills: 10 points
+- Certifications/Projects: 5 points
+
+**RESPONSE REQUIREMENTS:**
+
+For the 'score' field: Calculate total points (0-100) by adding GPA + Experience + Job Requirements scores.
+
+For the 'reason' field: Provide detailed breakdown like:
+"GPA: [X.XX] = [X/25] points ([status]). Experience: [X years] = [X/25] points ([status]). Job Requirements: [X/50] points - [specific breakdown of technical skills, education, etc.]"
+
+For the 'desc' field: Provide comprehensive assessment including:
+- Overall suitability for AI Engineer role
+- Key strengths that make them suitable
+- Areas of concern or gaps
+- Specific technical capabilities
+- Recommendation (Excellent/Good/Poor/No match)
+
+JOB REQUIREMENTS:
 {req_content}
+
+IMPORTANT: Always respond in the exact JSON format required by the ResponseFormatter model.
 '''
 
     prompt_text = HumanMessage(
@@ -37,9 +73,9 @@ Here is job requirements:
     )
 
     class ResponseFormatter(BaseModel):
-        score: int = Field(description="Give score from 0 to 100 for how much this candidate suits for AI Engineer role")
-        reason: str = Field(description="Give the reason about match or not the candidate with needed role")
-        desc: str = Field(description="Describe the candidate's skills and capability for needed role")
+        score: int = Field(description="Total score from 0-100 based on: GPA (25pts), Experience (25pts), Job Requirements (50pts)", ge=0, le=100)
+        reason: str = Field(description="Detailed breakdown of scoring: GPA assessment, experience evaluation, and job requirements match")
+        desc: str = Field(description="Comprehensive description of candidate's suitability including strengths, weaknesses, and overall fit")
 
     model_with_structure = llm.with_structured_output(ResponseFormatter)
 
