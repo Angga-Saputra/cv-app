@@ -83,8 +83,6 @@ CRITICAL: Always include ALL sections above. If a section has no content, write 
 JOB REQUIREMENTS:
 {req_content}
 
-IMPORTANT: Always respond in the exact JSON format required by the ResponseFormatter model.
-
 MATHEMATICAL VERIFICATION REQUIRED:
 Before finalizing your response, verify these calculations:
 1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
