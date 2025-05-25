@@ -14,7 +14,7 @@ def chat(req_content, uploaded_cv):
     encoded_base64 = base64.b64encode(file_content).decode('utf-8')
 
 
-    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for AI Engineer role using a structured scoring system.
+    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for Entry-Level SAP Functional role using a structured scoring system.
 
 SCORING BREAKDOWN (Total: 100 points):
 
@@ -40,8 +40,14 @@ Evaluate based on AI Engineer requirements:
 
 For the 'score' field: Calculate total points (0-100) by adding GPA + Experience + Job Requirements scores.
 
-For the 'reason' field: Provide detailed breakdown like:
-"GPA: [X.XX] = [X/25] points ([status]). Experience: [X years] = [X/25] points ([status]). Job Requirements: [X/50] points - [specific breakdown of technical skills, education, etc.]"
+For the 'reason' field: Provide structured breakdown in this exact format:
+"* GPA: [X.XX] = [X/25] points ([status])
+* Experience: [X years] = [X/25] points ([status])  
+* Job Requirements = [X/50] points
+   1. Technical Skills: [detailed assessment]
+   2. Education: [education evaluation]
+   3. Problem-solving: [problem-solving assessment]
+   4. Certifications/Projects: [certifications/projects evaluation]"
 
 For the 'desc' field: Provide comprehensive assessment including:
 - Overall suitability for AI Engineer role
