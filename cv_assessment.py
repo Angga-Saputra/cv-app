@@ -7,12 +7,18 @@ from langchain_community.callbacks.manager import get_openai_callback
 from langchain_core.messages import HumanMessage
 import pandas as pd
 from io import BytesIO
+import fitz  # PyMuPDF
+
+def extract_text_from_pdf(uploaded_pdf):
+    text = ""
+    with fitz.open(stream=uploaded_pdf.read(), filetype="pdf") as doc:
+        for page in doc:
+            text += page.get_text()
+    return text
 
 def chat(req_content, uploaded_cv):
-    file_content = uploaded_cv.read()
     file_name = uploaded_cv.name
-    encoded_base64 = base64.b64encode(file_content).decode('utf-8')
-
+    cv_text = extract_text_from_pdf(uploaded_cv)
 
     fix_prompt = f'''You are an Expert Recruiter evaluating candidates for the specified role using a structured scoring system.
 
@@ -86,21 +92,7 @@ Before finalizing your response, verify these calculations:
 3. All individual scores must not exceed their maximum limits (GPA≤25, Experience≤25, Job Requirements≤50)
 '''
 
-    prompt_text = HumanMessage(
-        content=[
-            {
-                "type": "text",
-                "text": fix_prompt
-                },
-            {
-                "type": "file",
-                "file": {
-                    "filename": file_name,
-                    "file_data": f"data:application/pdf;base64,{encoded_base64}"
-                    }
-                },
-        ]
-    )
+    prompt_text = HumanMessage(content=fix_prompt)
 
     class ResponseFormatter(BaseModel):
         score: int = Field(description="Total score from 0-100 based on: GPA (25pts), Experience (25pts), Job Requirements (50pts)", ge=0, le=100)
