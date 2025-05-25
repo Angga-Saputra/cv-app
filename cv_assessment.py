@@ -41,16 +41,17 @@ Evaluate based on the specific role requirements provided:
 For the 'score' field: Calculate total points (0-100) by adding GPA + Experience + Job Requirements scores.
 
 For the 'reason' field: Provide structured breakdown in this exact format:
-"
-* GPA: [X.XX] = [X/25] points ([status])
+"* GPA: [X.XX] = [X/25] points ([status])
 * Experience: [X years] = [X/25] points ([status])  
-* Job Requirements = [X/50] points (Calculate total points by adding Technical Skills + Education + Problem-solving + Certifications/Projects) scores.
+* Job Requirements = [X/50] points (sum of all sub-scores below)
    1. Technical Skills: [detailed assessment] = [X/20] points
    2. Education: [education evaluation] = [X/15] points
    3. Problem-solving: [problem-solving assessment] = [X/10] points
    4. Certifications/Projects: [certifications/projects evaluation] = [X/5] points"
 
-For the 'desc' field: Always provide comprehensive assessment for each candidate including:
+CRITICAL: Ensure the Job Requirements total equals the sum of all 4 sub-scores (Technical + Education + Problem-solving + Certifications). Double-check your math before responding.
+
+For the 'desc' field: Provide comprehensive assessment including:
 - Overall suitability for the specified role
 - Key strengths that make them suitable
 - Areas of concern or gaps
