@@ -43,20 +43,36 @@ For the 'score' field: Calculate total points (0-100) by adding GPA + Experience
 For the 'reason' field: Provide structured breakdown in this exact format:
 "* GPA: [X.XX] = [X/25] points ([status])
 * Experience: [X years] = [X/25] points ([status])  
-* Job Requirements = [X/50] points (sum of all sub-scores below)
+* Job Requirements = [X/50] points (sum of all sub-points below)
    1. Technical Skills: [detailed assessment] = [X/20] points
    2. Education: [education evaluation] = [X/15] points
    3. Problem-solving: [problem-solving assessment] = [X/10] points
    4. Certifications/Projects: [certifications/projects evaluation] = [X/5] points"
 
-CRITICAL: Ensure the Job Requirements total equals the sum of all 4 sub-scores (Technical + Education + Problem-solving + Certifications). Double-check your math before responding.
+CRITICAL: Ensure the Job Requirements total equals the sum of all 4 sub-points (Technical Skills + Education + Problem-solving + Certifications/Projects). Double-check your math before responding.
 
-For the 'desc' field: Provide comprehensive assessment including:
-- Overall suitability for the specified role
-- Key strengths that make them suitable
-- Areas of concern or gaps
-- Specific technical capabilities relevant to the role
-- Recommendation (Excellent/Good/Poor/No match)
+For the 'desc' field: Provide comprehensive assessment in this EXACT format:
+
+"**OVERALL SUITABILITY:** [Brief statement about candidate's fit for the role]
+
+**KEY STRENGTHS:**
+- [Strength 1]
+- [Strength 2]
+- [Strength 3 if applicable]
+
+**AREAS OF CONCERN:**
+- [Concern 1]
+- [Concern 2]
+- [Concern 3 if applicable]
+
+**TECHNICAL CAPABILITIES:**
+- [Relevant technical skill/capability 1]
+- [Relevant technical skill/capability 2]
+- [Additional capabilities if applicable]
+
+**FINAL RECOMMENDATION:** [Choose exactly one: EXCELLENT MATCH | GOOD MATCH | POOR MATCH | NO MATCH]"
+
+CRITICAL: Always include ALL sections above. If a section has no content, write "None identified" or "Not applicable".
 
 JOB REQUIREMENTS:
 {req_content}
