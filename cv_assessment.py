@@ -62,87 +62,39 @@ Here is job requirements:
     }
     return response
 
-with st.spinner("Preparing Application"):
+with st.spinner("Preparing Application", show_time=True):
+    theme_json = st_theme()
     time.sleep(1)
+    theme = theme_json['base']
 
 def get_base64_of_image(image_path):
-    try:
-        with open(image_path, "rb") as img_file:
-            return base64.b64encode(img_file.read()).decode()
-    except FileNotFoundError:
-        st.error(f"Background image not found: {image_path}")
-        return None
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+    
 
-def set_responsive_background():
-    """Set background that responds to Streamlit Cloud theme settings"""
-    light_bg = get_base64_of_image("./light_bg.png")
-    dark_bg = get_base64_of_image("./dark_bg.png")
-    
-    if not light_bg or not dark_bg:
-        return
-    
-    # Get the configured theme from Streamlit settings
-    configured_theme = st.get_option("theme.base") or "light"
-    
+# Custom CSS to set the background image
+def set_background_image(image_path):
+    encoded_image = get_base64_of_image(image_path)
     st.markdown(
         f"""
         <style>
-        /* Base background for light theme or default */
         .stApp {{
-            background-image: url("data:image/png;base64,{light_bg}");
+            background-image: url("data:image/png;base64,{encoded_image}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
         }}
-        
-        /* Override for dark theme when configured in Streamlit Cloud */
-        .stApp[data-theme="dark"],
-        [data-theme="dark"] .stApp,
-        body[data-theme="dark"] .stApp {{
-            background-image: url("data:image/png;base64,{dark_bg}") !important;
-        }}
-        
-        /* Media query fallback for system dark mode preference */
-        @media (prefers-color-scheme: dark) {{
-            .stApp {{
-                background-image: url("data:image/png;base64,{dark_bg}");
-            }}
-        }}
-        
-        /* Force dark background if theme is configured as dark */
-        {"" if configured_theme != "dark" else f'''
-        .stApp {{
-            background-image: url("data:image/png;base64,{dark_bg}") !important;
-        }}
-        '''}
         </style>
-        
-        <script>
-        // Set theme attribute based on Streamlit's theme configuration
-        document.documentElement.setAttribute('data-theme', '{configured_theme}');
-        document.body.setAttribute('data-theme', '{configured_theme}');
-        
-        // Also check for runtime theme indicators
-        setTimeout(function() {{
-            const appContainer = document.querySelector('.stApp');
-            if (appContainer) {{
-                appContainer.setAttribute('data-theme', '{configured_theme}');
-            }}
-        }}, 100);
-        </script>
         """,
         unsafe_allow_html=True
     )
 
-# Apply the responsive background
-set_responsive_background()
+if theme == "dark":
+    background_image_path = "./dark_bg.png"
+else:
+    background_image_path = "./light_bg.png"
 
-# Debug info in sidebar
-with st.sidebar:
-    st.write("**Theme Debug Info:**")
-    current_theme = st.get_option("theme.base")
-    st.write(f"Configured theme: `{current_theme}`")
-    st.write("*Theme changes require app restart in Streamlit Cloud*")
+set_background_image(background_image_path)
 
 # Judul aplikasi llm
 st.title("CV Assesment")
