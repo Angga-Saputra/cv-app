@@ -1,6 +1,6 @@
 import streamlit as st
 import base64, time
-#from streamlit_theme import st_theme
+from streamlit_theme import st_theme
 from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, Field
 from langchain_community.callbacks.manager import get_openai_callback
@@ -63,7 +63,7 @@ Here is job requirements:
     return response
 
 with st.spinner("Preparing Application", show_time=True):
-    #theme_json = st_theme()
+    theme_json = st_theme()
     time.sleep(1)
     theme = theme_json['base']
 
