@@ -24,23 +24,23 @@ def chat(req_content, uploaded_cv):
 
     SCORING BREAKDOWN (Total: 100 points):
 
-    **1. GPA SCORING (25 points):**
-    - GPA 3.50-4.00: 25 points (Strongly Recommended)
-    - GPA 3.00-3.49: 15 points (Recommended)
+    **1. GPA SCORING (15 points):**
+    - GPA 3.50-4.00: 15 points (Strongly Recommended)
+    - GPA 3.00-3.49: 5 points (Recommended)
     - GPA below 3.00: 0 points (Not Recommended)
 
     **2. EXPERIENCE SCORING (25 points):**
     - 0-2 years: 25 points (Strongly Recommended - Fresh talent)
     - 3-4 years: 15 points (Recommended)
-    - 5+ years: 10 points (Over-qualified)
+    - 5+ years: 0 points (Over-qualified)
     - No experience: 5 points
 
-    **3. JOB REQUIREMENTS SCORING (50 points):**
+    **3. JOB REQUIREMENTS SCORING (60 points):**
     Evaluate based on the specific role requirements provided:
-    - Technical Skills (Role-specific expertise): 20 points
-    - Education/Relevant Degree: 15 points
-    - Problem-solving & Analytical Skills: 10 points
-    - Certifications/Projects: 5 points
+    - Technical Skills (Role-specific expertise that match with requirements): 40 points
+    - Education/Relevant Degree: 5 points
+    - Problem-solving & Analytical Skills: 5 points
+    - Certifications/Projects that match with requirements: 10 points
 
     **RESPONSE REQUIREMENTS:**
 
