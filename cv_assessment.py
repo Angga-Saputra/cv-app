@@ -14,14 +14,14 @@ def chat(req_content, uploaded_cv):
     encoded_base64 = base64.b64encode(file_content).decode('utf-8')
 
 
-    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for Entry-Level SAP Functional role using a structured scoring system.
+    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for the specified role using a structured scoring system.
 
 SCORING BREAKDOWN (Total: 100 points):
 
 **1. GPA SCORING (25 points):**
 - GPA 3.50-4.00: 25 points (Strongly Recommended)
 - GPA 3.00-3.49: 15 points (Recommended)
-- GPA below 3.00: 5 points (Not Recommended)
+- GPA below 3.00: 0 points (Not Recommended)
 
 **2. EXPERIENCE SCORING (25 points):**
 - 0-2 years: 25 points (Strongly Recommended - Fresh talent)
@@ -30,8 +30,8 @@ SCORING BREAKDOWN (Total: 100 points):
 - No experience: 5 points
 
 **3. JOB REQUIREMENTS SCORING (50 points):**
-Evaluate based on AI Engineer requirements:
-- Technical Skills (Programming, ML/AI): 20 points
+Evaluate based on the specific role requirements provided:
+- Technical Skills (Role-specific expertise): 20 points
 - Education/Relevant Degree: 15 points
 - Problem-solving & Analytical Skills: 10 points
 - Certifications/Projects: 5 points
@@ -50,10 +50,10 @@ For the 'reason' field: Provide structured breakdown in this exact format:
    4. Certifications/Projects: [certifications/projects evaluation]"
 
 For the 'desc' field: Provide comprehensive assessment including:
-- Overall suitability for AI Engineer role
+- Overall suitability for the specified role
 - Key strengths that make them suitable
 - Areas of concern or gaps
-- Specific technical capabilities
+- Specific technical capabilities relevant to the role
 - Recommendation (Excellent/Good/Poor/No match)
 
 JOB REQUIREMENTS:
