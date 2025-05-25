@@ -62,6 +62,12 @@ JOB REQUIREMENTS:
 {req_content}
 
 IMPORTANT: Always respond in the exact JSON format required by the ResponseFormatter model.
+
+MATHEMATICAL VERIFICATION REQUIRED:
+Before finalizing your response, verify these calculations:
+1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
+2. GPA points + Experience points + Job Requirements points = Final score
+3. All individual scores must not exceed their maximum limits (GPA≤25, Experience≤25, Job Requirements≤50)
 '''
 
     prompt_text = HumanMessage(
@@ -82,8 +88,8 @@ IMPORTANT: Always respond in the exact JSON format required by the ResponseForma
 
     class ResponseFormatter(BaseModel):
         score: int = Field(description="Total score from 0-100 based on: GPA (25pts), Experience (25pts), Job Requirements (50pts)", ge=0, le=100)
-        reason: str = Field(description="Detailed breakdown of scoring: GPA assessment, experience evaluation, and job requirements match")
-        desc: str = Field(description="Comprehensive description of candidate's suitability including strengths, weaknesses, and overall fit")
+        reason: str = Field(description="Structured breakdown showing exact calculations: GPA score, Experience score, and Job Requirements with sub-scores that add up correctly. Format: '* GPA: X.XX = X/25 points\n* Experience: X years = X/25 points\n* Job Requirements = X/50 points (sum of sub-scores)\n   1. Technical Skills: description = X/20 points\n   2. Education: description = X/15 points\n   3. Problem-solving: description = X/10 points\n   4. Certifications/Projects: description = X/5 points'. CRITICAL: Verify Job Requirements total equals sum of all 4 sub-scores.")
+        desc: str = Field(description="Comprehensive description of candidate's suitability including strengths, weaknesses, and overall fit for the specified role")
 
     model_with_structure = llm.with_structured_output(ResponseFormatter)
 
