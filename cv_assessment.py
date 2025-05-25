@@ -63,7 +63,7 @@ Here is job requirements:
     return response
 
 with st.spinner("Preparing Application", show_time=True):
-    theme_json = st_theme()
+    #theme_json = st_theme()
     time.sleep(1)
     theme = theme_json['base']
 
