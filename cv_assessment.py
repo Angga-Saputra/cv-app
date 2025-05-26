@@ -9,22 +9,16 @@ import pandas as pd
 from io import BytesIO
 import fitz  # PyMuPDF
 
-def extract_text_from_pdf(uploaded_pdf):
-    text = ""
-    with fitz.open(stream=uploaded_pdf.read(), filetype="pdf") as doc:
-        for page in doc:
-            text += page.get_text()
-    return text
-
 def chat(req_content, uploaded_cv):
+    file_content = uploaded_cv.read()
     file_name = uploaded_cv.name
-    cv_text = extract_text_from_pdf(uploaded_cv)
+    encoded_base64 = base64.b64encode(file_content).decode('utf-8')
 
     fix_prompt = f'''You are an Expert Recruiters. Your task is review candidate data wether It's match for job requirements or not for the specified role with given candidate data provided.
-    Always answer in Indonesia language.
-    Here is job requirements:
-    {req_content}
-    '''
+Always answer in Indonesia language.
+Here is job requirements:
+{req_content}
+'''
 
     prompt_text = HumanMessage(content=fix_prompt)
 
