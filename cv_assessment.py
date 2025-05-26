@@ -20,70 +20,8 @@ def chat(req_content, uploaded_cv):
     file_name = uploaded_cv.name
     cv_text = extract_text_from_pdf(uploaded_cv)
 
-    fix_prompt = f'''You are an Expert Recruiter evaluating candidates for the specified role using a structured scoring system.
-
-    SCORING BREAKDOWN (Total: 100 points):
-
-    **1. GPA SCORING (15 points):**
-    - GPA 3.50-4.00: 15 points (Strongly Recommended)
-    - GPA 3.00-3.49: 5 points (Recommended)
-    - GPA below 3.00: 0 points (Not Recommended)
-
-    **2. EXPERIENCE SCORING (25 points):**
-    - 0-2 years: 25 points (Strongly Recommended - Fresh talent)
-    - 3-4 years: 15 points (Recommended)
-    - 5+ years: 0 points (Over-qualified)
-    - No experience: 5 points
-
-    **3. JOB REQUIREMENTS SCORING (60 points):**
-    Evaluate based on the specific role requirements provided:
-    - Technical Skills (Role-specific expertise that match with requirements): 40 points
-    - Education/Relevant Degree: 5 points
-    - Problem-solving & Analytical Skills: 5 points
-    - Certifications/Projects that match with requirements: 10 points
-
-    **RESPONSE REQUIREMENTS:**
-
-    Do NOT respond in JSON. Just return values for these 3 fields clearly:
-
-    1. score: integer (0-100) based on total of all points
-    2. reason: Use this EXACT structure:
-    "* GPA: [X.XX] = [X/25] points ([status])
-    * Experience: [X years] = [X/25] points ([status])  
-    * Job Requirements = [X/50] points (sum of all sub-points below)
-       1. Technical Skills: [detailed assessment] = [X/20] points
-       2. Education: [education evaluation] = [X/15] points
-       3. Problem-solving: [problem-solving assessment] = [X/10] points
-       4. Certifications/Projects: [certifications/projects evaluation] = [X/5] points"
-
-    3. desc: Use this EXACT format:
-
-    "**OVERALL SUITABILITY:** [Brief statement about candidate's fit for the role]
-
-    **KEY STRENGTHS:**
-    - [Strength 1]
-    - [Strength 2]
-    - [Strength 3 if applicable]
-
-    **AREAS OF CONCERN:**
-    - [Concern 1]
-    - [Concern 2]
-    - [Concern 3 if applicable]
-
-    **TECHNICAL CAPABILITIES:**
-    - [Relevant technical skill/capability 1]
-    - [Relevant technical skill/capability 2]
-    - [Additional capabilities if applicable]
-
-    **FINAL RECOMMENDATION:** [Choose exactly one: EXCELLENT MATCH | GOOD MATCH | POOR MATCH | NO MATCH]"
-
-    IMPORTANT: All sections must be present. Use 'None identified' if there is nothing to mention in a section.
-
-    MATHEMATICAL VERIFICATION REQUIRED:
-    1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
-    2. GPA points + Experience points + Job Requirements points = Final score
-    3. Each section must not exceed its max (GPA≤25, Experience≤25, Job Requirements≤50)
-    
+    fix_prompt = f'''You are an Expert Recruiters. Your task is review candidate data wether It's match for job requirements or not for the specified role with given candidate data provided.
+    Always answer in Indonesia language.
     Here is job requirements:
     {req_content}
     '''
@@ -91,8 +29,8 @@ def chat(req_content, uploaded_cv):
     prompt_text = HumanMessage(content=fix_prompt)
 
     class ResponseFormatter(BaseModel):
-        score: int = Field(description="Total score from 0-100 based on: GPA (25pts), Experience (25pts), Job Requirements (50pts)", ge=0, le=100)
-        reason: str = Field(description="Structured breakdown showing exact calculations: GPA score, Experience score, and Job Requirements with sub-scores that add up correctly. Format: '* GPA: X.XX = X/25 points\n* Experience: X years = X/25 points\n* Job Requirements = X/50 points (sum of sub-scores)\n   1. Technical Skills: description = X/20 points\n   2. Education: description = X/15 points\n   3. Problem-solving: description = X/10 points\n   4. Certifications/Projects: description = X/5 points'. CRITICAL: Verify Job Requirements total equals sum of all 4 sub-scores.")
+        score: int = Field(description="Give score from 0 to 100 for how much this candidate suits for the specific role")
+        reason: str = Field(description="Give the reason about match or not the candidate with needed role")
         desc: str = Field(description="Comprehensive description of candidate's suitability including strengths, weaknesses, and overall fit for the specified role")
 
     model_with_structure = llm.with_structured_output(ResponseFormatter)
