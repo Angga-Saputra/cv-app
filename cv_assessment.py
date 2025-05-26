@@ -83,6 +83,9 @@ def chat(req_content, uploaded_cv):
     1. Technical Skills + Education + Problem-solving + Certifications = Job Requirements total
     2. GPA points + Experience points + Job Requirements points = Final score
     3. Each section must not exceed its max (GPA≤25, Experience≤25, Job Requirements≤50)
+    
+    Here is job requirements:
+    {req_content}
     '''
 
     prompt_text = HumanMessage(content=fix_prompt)
